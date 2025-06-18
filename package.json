@@ -1,0 +1,33 @@
+{
+  "name": "1global-backend-challenge",
+  "version": "1.0.0",
+  "description": "1global-backend-challenge",
+  "main": "src/index.ts",
+  "scripts": {
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "prepare": "husky install"
+  },
+  "keywords": [],
+  "author": "Jefferson Sarti",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/express": "^5.0.3",
+    "@types/node": "^24.0.3",
+    "husky": "^8.0.0",
+    "lint-staged": "^15.5.2",
+    "prettier": "^3.5.3",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
+    "pg": "^8.16.1"
+  },
+  "lint-staged": {
+    "**/*.{ts,js,json,md}": [
+      "prettier --write"
+    ]
+  }
+}
