@@ -17,6 +17,10 @@ The API is well-tested, documented, and ready for integration into larger system
 
 ## 🚀 How to execute the project
 
+### 0. Setup environment variables
+
+Copy the contents of the `.env.example` file to a `.env` and fill the blank variables with their respective and correct values.
+
 ### 1. Build & Run with Docker
 
 ```bash

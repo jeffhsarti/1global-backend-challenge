@@ -1,0 +1,28 @@
+# Node modules
+node_modules
+npm-debug.log
+yarn-error.log
+
+# TypeScript
+src/
+tsconfig.json
+*.ts
+*.tsx
+
+# Environment files
+.env
+.env.* 
+
+# Build tools
+Dockerfile
+docker-compose.yml
+
+# Editor & system files
+.vscode
+.idea
+*.swp
+.DS_Store
+
+# Git
+.git
+.gitignore
