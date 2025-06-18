@@ -4,6 +4,9 @@
   "description": "1global-backend-challenge",
   "main": "src/index.ts",
   "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "prepare": "husky install"
