@@ -1,21 +1,35 @@
-import express from 'express';
-import { config } from 'dotenv';
-import { SecretManager } from '@config/secrets/secret-manager';
-import { EnvSecretProvider } from '@config/secrets/implementations/env-secret-provider';
+import express, { Express } from 'express';
+import dotenv from 'dotenv';
 
-config();
+import { initializeDatabase } from '@infrastructure/database';
+import { EnvSecretProvider } from '@infrastructure/secrets/implementations/env-secret-provider';
+import { SecretManager } from '@infrastructure/secrets/secret-manager';
+import makeHealthRouter from '@interfaces/http/routes/health';
+import { Logger } from '@utils/logger';
 
-const secretManager = new SecretManager(new EnvSecretProvider());
+dotenv.config();
+const logger = new Logger('BOOTSTRAP');
 
-const app = express();
-app.use(express.json());
+async function bootstrap() {
+  const app: Express = express();
+  app.use(express.json());
 
-// Health‐check
-app.get('/health', (_, res) => {
-  res.status(200).json({ status: 'ok' });
-});
+  // Initialize SecretManager and Database Pool
+  const secretManager = new SecretManager(new EnvSecretProvider());
+  const pool = await initializeDatabase(secretManager);
 
-const PORT = secretManager.get('PORT');
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  // Register routes
+  const healthRouter = makeHealthRouter(pool);
+  app.use('/health', healthRouter);
+
+  // Start server
+  const port = Number(await secretManager.get('PORT'));
+  app.listen(port, () => {
+    logger.info(`Server listening on port ${port}`);
+  });
+}
+
+bootstrap().catch((err) => {
+  logger.error('Failed to start application', err);
+  process.exit(1);
 });

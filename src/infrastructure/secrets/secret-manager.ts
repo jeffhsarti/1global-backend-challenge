@@ -1,5 +1,5 @@
 import { SecretProvider } from './providers/secret-provider';
-import { Logger } from '@config/logger';
+import { Logger } from 'src/utils/logger';
 
 export class SecretManager {
   private provider: SecretProvider;
@@ -17,7 +17,7 @@ export class SecretManager {
    * Get secret value by key, always returns a Promise
    * @param key The secret key
    */
-  async get(key: string): Promise<string | null> {
+  async get(key: string): Promise<string> {
     // Normalize both sync and async providers
     const result = this.provider.getSecret(key);
     this.logger.debug(`Secret ${key} requested`);

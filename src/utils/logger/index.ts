@@ -11,7 +11,7 @@ export class Logger {
     const ctx = this.context ? `[${this.context}]` : '';
     const levelName = level.toUpperCase();
     const paddedLevel = levelName.padEnd(Logger.LEVEL_PADDING, ' ');
-    return `${timestamp} ${ctx} ${paddedLevel}: ${message}`;
+    return `${timestamp} | ${ctx} | ${paddedLevel} | ${message}`;
   }
 
   info(message: string): void {

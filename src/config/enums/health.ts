@@ -1,0 +1,9 @@
+export enum HEALTH_STATUS {
+  'OK' = 'OK',
+  'ERROR' = 'ERROR',
+}
+
+export enum DATABASE_CONNECTION_STATUS {
+  'CONNECTED' = 'CONNECTED',
+  'UNAVAILABLE' = 'UNAVAILABLE',
+}
