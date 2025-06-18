@@ -3,15 +3,9 @@ node_modules
 npm-debug.log
 yarn-error.log
 
-# TypeScript
-src/
-tsconfig.json
-*.ts
-*.tsx
-
 # Environment files
 .env
-.env.* 
+.env.*
 
 # Build tools
 Dockerfile
