@@ -1,7 +1,11 @@
 import express from 'express';
-import dotenv from 'dotenv';
+import { config } from 'dotenv';
+import { SecretManager } from '@config/secrets/secret-manager';
+import { EnvSecretProvider } from '@config/secrets/implementations/env-secret-provider';
 
-dotenv.config();
+config();
+
+const secretManager = new SecretManager(new EnvSecretProvider());
 
 const app = express();
 app.use(express.json());
@@ -11,7 +15,7 @@ app.get('/health', (_, res) => {
   res.status(200).json({ status: 'ok' });
 });
 
-const PORT = process.env.PORT ?? 3000;
+const PORT = secretManager.get('PORT');
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
