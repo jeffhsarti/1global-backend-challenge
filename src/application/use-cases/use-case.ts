@@ -1,3 +1,3 @@
-export interface UseCase<R> {
-  execute(...args: any[]): Promise<R>;
+export interface UseCase<R, A = void> {
+  execute(args: A extends void ? void : A): Promise<R>;
 }

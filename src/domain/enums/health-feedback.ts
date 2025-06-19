@@ -1,7 +1,4 @@
-import {
-  HEALTH_STATUS,
-  DATABASE_CONNECTION_STATUS,
-} from '@config/enums/health';
+import { HEALTH_STATUS, DATABASE_CONNECTION_STATUS } from './health-status';
 
 export interface HealthFeedback {
   status: HEALTH_STATUS;

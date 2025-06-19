@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
 import { UseCase } from '@application/use-cases/use-case';
-import { HealthFeedback } from '@domain/health/health-feedback';
+import { HealthFeedback } from '@domain/enums/health-feedback';
 import { Logger } from '@utils/logger';
-import { HEALTH_STATUS } from '@config/enums/health';
+import { HEALTH_STATUS } from '@domain/enums/health-status';
 
 export class HealthCheckController {
   private logger: Logger;
@@ -11,7 +11,7 @@ export class HealthCheckController {
     this.logger = new Logger('HEALTH_CHECK_CONTROLLER');
   }
 
-  async getHealthCheck(_: Request, res: Response) {
+  async handle(_: Request, res: Response) {
     const result = await this.healthCheckUseCase.execute();
     const code = result.status === HEALTH_STATUS.OK ? 200 : 503;
     this.logger.info(`Health check result: ${JSON.stringify(result)}`);

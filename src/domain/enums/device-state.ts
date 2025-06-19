@@ -1,0 +1,5 @@
+export enum DEVICE_STATE {
+  'AVAILABLE' = 'AVAILABLE',
+  'IN_USE' = 'IN_USE',
+  'INACTIVE' = 'INACTIVE',
+}

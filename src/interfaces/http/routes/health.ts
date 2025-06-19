@@ -9,8 +9,8 @@ export default function makeHealthRouter(pool: Pool) {
 
   const router = Router();
   router.get(
-    '/',
-    healthCheckController.getHealthCheck.bind(healthCheckController),
+    '/health',
+    healthCheckController.handle.bind(healthCheckController),
   );
   return router;
 }

@@ -1,9 +1,9 @@
 import { Pool } from 'pg';
-import { HealthFeedback } from '@domain/health/health-feedback';
+import { HealthFeedback } from '@domain/enums/health-feedback';
 import {
   HEALTH_STATUS,
   DATABASE_CONNECTION_STATUS,
-} from '@config/enums/health';
+} from '@domain/enums/health-status';
 import { UseCase } from '../use-case';
 
 export class HealthCheckUseCase implements UseCase<HealthFeedback> {
