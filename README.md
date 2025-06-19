@@ -17,9 +17,10 @@ The API is well-tested, documented, and ready for integration into larger system
 
 ## 🚀 How to execute the project
 
-### 0. Setup environment variables
+### 0. Environment setup
 
-Copy the contents of the `.env.example` file to a `.env` and fill the blank variables with their respective and correct values.
+- Copy the contents of the `.env.example` file to a `.env`.
+- Fill the blank variables with their respective and correct values.
 
 ### 1. Build & Run with Docker
 
@@ -27,7 +28,13 @@ Copy the contents of the `.env.example` file to a `.env` and fill the blank vari
 docker-compose up --build
 ```
 
-### 2. Accessing the API
+### 2. Database setup
+
+- Connect to the Postgres database using your favourite SQL tool.
+- Copy the contents of the `/sql/setup.sql` file or simply upload it onto your SQL tool.
+- Execute the queries.
+
+### 3. Accessing the API
 
 Health check: http://localhost:3000/health
 
