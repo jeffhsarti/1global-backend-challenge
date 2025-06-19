@@ -20,9 +20,16 @@ import {
   updateStateSchema,
 } from '../schemas/device/update-device-schema';
 import { deviceIdSchema } from '../schemas/device/device-id-schema';
+import { GetDeviceByIdUseCase } from '@application/use-cases/device/get-device-by-id-use-case';
+import { GetDeviceByIdController } from '../controllers/device/get-device-by-id-controller';
 
 export default function makeDeviceRouter(pool: Pool) {
   const repository = new PostgresDeviceRepository(pool);
+
+  const getDeviceByIdUseCase = new GetDeviceByIdUseCase(repository);
+  const getDeviceByIdController = new GetDeviceByIdController(
+    getDeviceByIdUseCase,
+  );
 
   const createDeviceUseCase = new CreateDeviceUseCase(repository);
   const createDeviceController = new CreateDeviceController(
@@ -45,6 +52,11 @@ export default function makeDeviceRouter(pool: Pool) {
   );
 
   const router = Router();
+  router.get(
+    '/device/:id',
+    validate(deviceIdSchema, 'params'),
+    getDeviceByIdController.handle.bind(getDeviceByIdController),
+  );
   router.post(
     '/device',
     validate(createDeviceSchema),
