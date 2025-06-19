@@ -12,6 +12,40 @@ interface DeviceRow {
   updatedAt: string;
 }
 
+/**
+ * It's a common practice to implement simple mappers
+ * inside the repository, since the repository should
+ * know the domain. But, it is important to abstract
+ * that logic if the mapper starts to grow in size or
+ * complexity (for example, complex transformations,
+ * additional validations, nested fields) or if we had
+ * other repositories that depend on the same mapping
+ * strategy (for better reuse and testability).
+ */
+function mapToDevice(row: DeviceRow): Device {
+  return new Device({
+    id: row.id,
+    name: row.name,
+    brand: row.brand,
+    state: mapToDeviceState(row.state),
+    createdAt: new Date(row.createdAt),
+    updatedAt: new Date(row.updatedAt),
+  });
+}
+
+function mapToDeviceState(state: string): DEVICE_STATE {
+  switch (state) {
+    case DEVICE_STATE.AVAILABLE:
+      return DEVICE_STATE.AVAILABLE;
+    case DEVICE_STATE.IN_USE:
+      return DEVICE_STATE.IN_USE;
+    case DEVICE_STATE.INACTIVE:
+      return DEVICE_STATE.INACTIVE;
+    default:
+      throw new Error(`Unknown device state from DB: ${state}`);
+  }
+}
+
 export class PostgresDeviceRepository implements DeviceRepository {
   constructor(private readonly pool: Pool) {}
 
@@ -27,41 +61,34 @@ export class PostgresDeviceRepository implements DeviceRepository {
       device.updatedAt.toISOString(),
     ];
     const result = await this.pool.query<DeviceRow>(query, params);
-    const row = result.rows[0];
 
     // Maps the database result to a domain entity.
-    /**
-     * It's a common practice to implement simple mappers
-     * inside the repository, since the repository should
-     * know the domain. But, it is important to abstract
-     * that logic if the mapper starts to grow in size or
-     * complexity (for example, complex transformations,
-     * additional validations, nested fields) or if we had
-     * other repositories that depend on the same mapping
-     * strategy (for better reuse and testability).
-     */
-    const createdDevice = new Device({
-      id: row.id,
-      name: row.name,
-      brand: row.brand,
-      state: this.mapToDeviceState(row.state),
-      createdAt: new Date(row.createdAt),
-      updatedAt: new Date(row.updatedAt),
-    });
-
-    return createdDevice;
+    return mapToDevice(result.rows[0]);
   }
 
-  private mapToDeviceState(state: string): DEVICE_STATE {
-    switch (state) {
-      case DEVICE_STATE.AVAILABLE:
-        return DEVICE_STATE.AVAILABLE;
-      case DEVICE_STATE.IN_USE:
-        return DEVICE_STATE.IN_USE;
-      case DEVICE_STATE.INACTIVE:
-        return DEVICE_STATE.INACTIVE;
-      default:
-        throw new Error(`Unknown device state from DB: ${state}`);
-    }
+  async findById(id: string): Promise<Device | null> {
+    const query = `SELECT * FROM devices.device WHERE id = $1`;
+    const result = await this.pool.query<DeviceRow>(query, [id]);
+
+    if (result.rows.length === 0) return null;
+    return mapToDevice(result.rows[0]);
+  }
+
+  async update(device: Device): Promise<Device> {
+    const query = `
+      UPDATE devices.device
+      SET name = $2, brand = $3, state = $4, "updatedAt" = $5
+      WHERE id = $1
+      RETURNING id, name, brand, state, "createdAt", "updatedAt"
+    `;
+    const params = [
+      device.id,
+      device.name,
+      device.brand,
+      device.state,
+      device.updatedAt.toISOString(),
+    ];
+    const result = await this.pool.query<DeviceRow>(query, params);
+    return mapToDevice(result.rows[0]);
   }
 }
