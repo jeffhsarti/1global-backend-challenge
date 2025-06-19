@@ -91,4 +91,21 @@ export class PostgresDeviceRepository implements DeviceRepository {
     const result = await this.pool.query<DeviceRow>(query, params);
     return mapToDevice(result.rows[0]);
   }
+
+  async delete(id: string): Promise<void> {
+    const client = await this.pool.connect();
+    try {
+      await client.query('BEGIN');
+      // In the future, we can add here more operations related to the device excluion flow
+      await client.query(`DELETE FROM devices.device WHERE id = $1`, [id]);
+
+      await client.query('COMMIT');
+    } catch (error) {
+      // If anything goes wrong, we rollback and we ensure that the device is still in the database.
+      await client.query('ROLLBACK');
+      throw error;
+    } finally {
+      client.release();
+    }
+  }
 }

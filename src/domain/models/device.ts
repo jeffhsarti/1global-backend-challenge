@@ -19,7 +19,7 @@ export class Device {
     this.id = params.id;
     this.name = params.name;
     this.brand = params.brand;
-    this.state = params.state ?? DEVICE_STATE.ACTIVE;
+    this.state = params.state ?? DEVICE_STATE.AVAILABLE;
     this.createdAt = params.createdAt ?? new Date();
     this.updatedAt = params.updatedAt ?? new Date();
   }

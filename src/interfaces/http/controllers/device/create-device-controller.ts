@@ -12,9 +12,9 @@ export class CreateDeviceController {
       const { name, brand } = req.body;
       const device = await this.useCase.execute({ name, brand });
       res.status(201).json(device);
-    } catch (error) {
-      this.logger.error('Error creating device', error as Error);
-      res.status(500).json({ error: 'Internal Server Error' });
+    } catch (err) {
+      this.logger.error('Error creating device', err as Error);
+      res.status(500).json({ err: 'Internal Server Error' });
     }
   }
 }

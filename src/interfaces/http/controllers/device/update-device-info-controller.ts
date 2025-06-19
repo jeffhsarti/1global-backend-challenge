@@ -2,7 +2,10 @@ import { Request, Response } from 'express';
 import { Logger } from '@utils/logger';
 import { UseCase } from '@application/use-cases/use-case';
 import { Device } from '@domain/models/device';
-import { ForbiddenInUseDeviceOperation } from '@config/errors/device';
+import {
+  DeviceNotFoundError,
+  ForbiddenInUseDeviceOperation,
+} from '@config/errors/device';
 
 export class UpdateDeviceInfoController {
   private logger = new Logger('UPDATE_DEVICE_INFO_CONTROLLER');
@@ -24,6 +27,10 @@ export class UpdateDeviceInfoController {
       this.logger.error('Error updating name/brand', err as Error);
       if (err instanceof ForbiddenInUseDeviceOperation) {
         res.status(409).json({ error: err.message });
+        return;
+      }
+      if (err instanceof DeviceNotFoundError) {
+        res.status(404).json({ error: err.message });
         return;
       }
       res.status(400).json({ error: 'Failed to update device name or brand.' });
