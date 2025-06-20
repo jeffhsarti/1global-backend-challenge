@@ -1,3 +1,4 @@
+import { DEVICE_STATE } from '@domain/enums/device-state';
 import { Device } from '@domain/models/device';
 
 export interface DeviceRepository {
@@ -11,5 +12,14 @@ export interface DeviceRepository {
     orderBy: string,
     orderType: 'DESC' | 'ASC',
   ): Promise<Device[]>;
+  getByPaginatedQuery(
+    limit: number,
+    offset: number,
+    orderBy: string,
+    orderType: 'DESC' | 'ASC',
+    state: DEVICE_STATE[],
+    brand?: string,
+  ): Promise<Device[]>;
   countAll(): Promise<number>;
+  countByQuery(state: DEVICE_STATE[], brand?: string): Promise<number>;
 }

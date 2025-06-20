@@ -11,3 +11,10 @@ export class ForbiddenInUseDeviceOperation extends Error {
     this.name = 'ForbiddenInUseDeviceOperation';
   }
 }
+
+export class InvalidDeviceStateError extends Error {
+  constructor(state: any) {
+    super(`State ${state} is not a valid device state`);
+    this.name = 'InvalidDeviceStateError';
+  }
+}

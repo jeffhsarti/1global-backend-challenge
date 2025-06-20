@@ -49,6 +49,63 @@ function mapToDeviceState(state: string): DEVICE_STATE {
 export class PostgresDeviceRepository implements DeviceRepository {
   constructor(private readonly pool: Pool) {}
 
+  private validateSortOrderParameter(sortOrder: string): void {
+    const allowedSortOrder = ['ASC', 'DESC'];
+    if (!allowedSortOrder.includes(sortOrder)) {
+      throw new Error(`Invalid sortOrder: ${sortOrder}`);
+    }
+  }
+  private validateSortByParameter(sortBy: string): void {
+    const validOrderFields = ['name', 'brand'];
+    if (!validOrderFields.includes(sortBy)) {
+      throw new Error(`Invalid sortBy field: ${sortBy}`);
+    }
+  }
+
+  async getByPaginatedQuery(
+    limit: number,
+    offset: number,
+    sortBy: string,
+    sortOrder: 'DESC' | 'ASC',
+    state: DEVICE_STATE[],
+    brand?: string,
+  ): Promise<Device[]> {
+    this.validateSortByParameter(sortBy);
+    this.validateSortOrderParameter(sortOrder);
+    let query = `
+      SELECT *
+      FROM devices.device
+      WHERE state = ANY($3)
+    `;
+
+    const params: any[] = [limit, offset, state];
+    if (brand) {
+      params.push(brand);
+      query += ` AND brand = $${params.length}`;
+    }
+
+    query += ` ORDER BY ${sortBy} ${sortOrder} LIMIT $1 OFFSET $2`;
+    const result = await this.pool.query(query, params);
+    return result.rows.map(mapToDevice);
+  }
+
+  async countByQuery(state: DEVICE_STATE[], brand?: string): Promise<number> {
+    let query = `
+      SELECT COUNT(*) FROM devices.device
+      WHERE state = ANY($1)
+    `;
+
+    const params: any[] = [state];
+
+    if (brand) {
+      params.push(brand);
+      query += ` AND brand = $${params.length}`;
+    }
+
+    const result = await this.pool.query<{ count: string }>(query, params);
+    return Number(result.rows[0].count);
+  }
+
   async save(device: Device): Promise<Device> {
     const query = `INSERT INTO devices.device(id, name, brand, state, "createdAt", "updatedAt")
       VALUES($1, $2, $3, $4, $5, $6) RETURNING id, name, brand, state, "createdAt", "updatedAt"`;
@@ -80,15 +137,8 @@ export class PostgresDeviceRepository implements DeviceRepository {
     sortBy: string,
     sortOrder: 'DESC' | 'ASC',
   ): Promise<Device[]> {
-    const allowedSortBy = ['name', 'brand']; // ou qualquer outro campo permitido
-    const allowedSortOrder = ['ASC', 'DESC'];
-
-    if (!allowedSortBy.includes(sortBy)) {
-      throw new Error(`Invalid sortBy field: ${sortBy}`);
-    }
-    if (!allowedSortOrder.includes(sortOrder)) {
-      throw new Error(`Invalid sortOrder: ${sortOrder}`);
-    }
+    this.validateSortByParameter(sortBy);
+    this.validateSortOrderParameter(sortOrder);
 
     const query = `
       SELECT id, name, brand, state, "createdAt", "updatedAt"

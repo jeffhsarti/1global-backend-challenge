@@ -2,32 +2,41 @@ import { Router } from 'express';
 import { Pool } from 'pg';
 
 import { CreateDeviceController } from '../controllers/device/create-device-controller';
+import { DeleteDeviceController } from '../controllers/device/delete-device-controller';
+import { GetDeviceByIdController } from '../controllers/device/get-device-by-id-controller';
+import { GetDevicePaginatedController } from '../controllers/device/get-device-paginated-controller';
+import { GetDevicesByQueryController } from '../controllers/device/get-devices-by-query-controller';
 import { UpdateDeviceStateController } from '../controllers/device/update-device-state-controller';
 import { UpdateDeviceInfoController } from '../controllers/device/update-device-info-controller';
-import { DeleteDeviceController } from '../controllers/device/delete-device-controller';
 
 import { PostgresDeviceRepository } from '@infrastructure/repositories/postgres/device-repository';
 
+import { GetDeviceByIdUseCase } from '@application/use-cases/device/get-device-by-id-use-case';
+import { GetDevicesPaginatedUseCase } from '@application/use-cases/device/get-device-paginated-use-case';
+import { GetDevicesByQueryUseCase } from '@application/use-cases/device/get-devices-by-query-use-case';
 import { UpdateDeviceInfoUseCase } from '@application/use-cases/device/update-device-info-use-case';
 import { UpdateDeviceStateUseCase } from '@application/use-cases/device/update-device-state-use-case';
 import { CreateDeviceUseCase } from '@application/use-cases/device/create-device-use-case';
 import { DeleteDeviceUseCase } from '@application/use-cases/device/delete-device-use-case';
 
-import { validate } from '../middlewares/zod-validation';
+import { validate, validateQuery } from '../middlewares/zod-validation';
 import { createDeviceSchema } from '../schemas/device/create-device-schema';
+import { deviceIdSchema } from '../schemas/device/device-id-schema';
 import {
   updateInfoSchema,
   updateStateSchema,
 } from '../schemas/device/update-device-schema';
-import { deviceIdSchema } from '../schemas/device/device-id-schema';
-import { GetDeviceByIdUseCase } from '@application/use-cases/device/get-device-by-id-use-case';
-import { GetDeviceByIdController } from '../controllers/device/get-device-by-id-controller';
-import { GetDevicesPaginatedUseCase } from '@application/use-cases/device/get-device-paginated-use-case';
-import { GetDevicePaginatedController } from '../controllers/device/get-device-paginated-controller';
 import { paginatedDeviceSchema } from '../schemas/device/paginated-device-schema';
+
+import { paginatedDeviceFilterSchema } from '../schemas/device/paginated-device-filter-schema';
 
 export default function makeDeviceRouter(pool: Pool) {
   const repository = new PostgresDeviceRepository(pool);
+
+  const getDevicesByQueryUseCase = new GetDevicesByQueryUseCase(repository);
+  const getDevicesByQueryController = new GetDevicesByQueryController(
+    getDevicesByQueryUseCase,
+  );
 
   const getDevicesPaginatedUseCase = new GetDevicesPaginatedUseCase(repository);
   const getDevicesPaginatedController = new GetDevicePaginatedController(
@@ -61,9 +70,15 @@ export default function makeDeviceRouter(pool: Pool) {
 
   const router = Router();
   router.get(
-    '/device',
-    validate(paginatedDeviceSchema, 'query'),
+    '/devices/all',
+    validateQuery(paginatedDeviceSchema),
     getDevicesPaginatedController.handle.bind(getDevicesPaginatedController),
+  );
+  router.get(
+    '/devices/filter',
+    validateQuery(paginatedDeviceFilterSchema),
+    validateQuery(paginatedDeviceSchema),
+    getDevicesByQueryController.handle.bind(getDevicesByQueryController),
   );
   router.get(
     '/device/:id',
