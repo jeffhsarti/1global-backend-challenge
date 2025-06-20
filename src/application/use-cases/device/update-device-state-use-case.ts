@@ -14,12 +14,17 @@ export class UpdateDeviceStateUseCase
 {
   constructor(private readonly repository: DeviceRepository) {}
 
+  /**
+   * Executes the use case to update the state of an existing device.
+   * @param input - The input data containing the device ID and new state.
+   * @returns A promise that resolves to the updated device.
+   * This use case changes the device's state and updates the timestamp.
+   */
   async execute({ id, state }: UpdateDeviceStateInput): Promise<Device> {
     const existing = await this.repository.findById(id);
     if (!existing) throw new DeviceNotFoundError(id);
 
-    existing.state = state;
-    existing.updateTimestamp();
+    existing.updateState(state);
 
     return await this.repository.update(existing);
   }

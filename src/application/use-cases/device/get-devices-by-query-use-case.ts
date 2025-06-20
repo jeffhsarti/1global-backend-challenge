@@ -28,6 +28,12 @@ export class GetDevicesByQueryUseCase
 {
   constructor(private readonly repository: DeviceRepository) {}
 
+  /**
+   * Executes the use case to retrieve devices based on a query.
+   * @param input - The input data containing query parameters such as state, brand, and pagination.
+   * @returns A promise that resolves to an array of devices matching the query.
+   * This use case fetches devices from the repository that match the specified query parameters.
+   */
   async execute(
     input: GetDevicesByQueryInput,
   ): Promise<GetDevicesByQueryOutput> {

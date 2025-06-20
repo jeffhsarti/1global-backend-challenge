@@ -1,11 +1,7 @@
 import { Device } from '@domain/models/device';
 import { UseCase } from '../use-case';
 import { DeviceRepository } from '@application/repositories/device-repository';
-import { DEVICE_STATE } from '@domain/enums/device-state';
-import {
-  DeviceNotFoundError,
-  ForbiddenInUseDeviceOperation,
-} from '@config/errors/device';
+import { DeviceNotFoundError } from '@config/errors/device';
 
 export interface UpdateDeviceInfoInput {
   id: string;
@@ -18,17 +14,17 @@ export class UpdateDeviceInfoUseCase
 {
   constructor(private readonly repository: DeviceRepository) {}
 
+  /**
+   * Executes the use case to update the information of an existing device.
+   * @param input - The input data containing the device ID, new name, and new brand.
+   * @returns A promise that resolves to the updated device.
+   * This use case updates the device's information, ensuring it is not in use.
+   */
   async execute({ id, name, brand }: UpdateDeviceInfoInput): Promise<Device> {
     const existing = await this.repository.findById(id);
     if (!existing) throw new DeviceNotFoundError(id);
 
-    if (existing.state === DEVICE_STATE.IN_USE) {
-      throw new ForbiddenInUseDeviceOperation('update');
-    }
-
-    existing.name = name;
-    existing.brand = brand;
-    existing.updateTimestamp();
+    existing.updateInfo(name, brand);
 
     return await this.repository.update(existing);
   }

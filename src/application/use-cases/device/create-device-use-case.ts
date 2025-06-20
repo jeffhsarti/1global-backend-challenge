@@ -12,6 +12,12 @@ interface CreateDeviceInput {
 export class CreateDeviceUseCase implements UseCase<Device, CreateDeviceInput> {
   constructor(private readonly repository: DeviceRepository) {}
 
+  /**
+   * Executes the use case to create a new device.
+   * @param input - The input data containing the name and brand of the device.
+   * @returns A promise that resolves to the newly created device.
+   * This use case handles the creation of a new device with the provided details.
+   */
   async execute(input: CreateDeviceInput): Promise<Device> {
     const device = new Device({
       id: randomUUID(),

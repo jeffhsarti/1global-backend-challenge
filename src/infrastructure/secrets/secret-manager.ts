@@ -1,5 +1,5 @@
 import { SecretProvider } from './providers/secret-provider';
-import { Logger } from 'src/utils/logger';
+import { Logger } from '@utils/logger';
 
 export class SecretManager {
   private provider: SecretProvider;

@@ -4,7 +4,6 @@ import {
   DeviceNotFoundError,
   ForbiddenInUseDeviceOperation,
 } from '@config/errors/device';
-import { DEVICE_STATE } from '@domain/enums/device-state';
 
 interface DeleteDeviceInput {
   id: string;
@@ -13,11 +12,17 @@ interface DeleteDeviceInput {
 export class DeleteDeviceUseCase implements UseCase<void, DeleteDeviceInput> {
   constructor(private readonly repository: DeviceRepository) {}
 
+  /**
+   * Executes the use case to delete a device by its ID.
+   * @param input - The input data containing the device ID.
+   * @returns A promise that resolves when the device is successfully deleted.
+   * This use case deletes the device from the repository if it is eligible for deletion.
+   */
   async execute({ id }: DeleteDeviceInput): Promise<void> {
     const existing = await this.repository.findById(id);
     if (!existing) throw new DeviceNotFoundError(id);
 
-    if (existing.state === DEVICE_STATE.IN_USE) {
+    if (!existing.canDelete()) {
       throw new ForbiddenInUseDeviceOperation('delete');
     }
     await this.repository.delete(id);

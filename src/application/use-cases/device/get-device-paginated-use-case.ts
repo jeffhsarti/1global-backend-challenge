@@ -24,6 +24,12 @@ export class GetDevicesPaginatedUseCase
 {
   constructor(private readonly repository: DeviceRepository) {}
 
+  /**
+   * Executes the use case to retrieve a paginated list of devices.
+   * @param input - The input data containing pagination and sorting parameters.
+   * @returns A promise that resolves to an array of devices.
+   * This use case fetches a paginated list of devices from the repository based on the provided parameters.
+   */
   async execute(
     input: GetDevicesPaginatedInput,
   ): Promise<GetDevicesPaginatedOutput> {
