@@ -19,7 +19,9 @@ const config: Config = {
     '!src/docs/**',
     '!src/**/*.d.ts',
     '!src/infrastructure/repositories/**',
+    '!src/__tests__/helpers/**',
   ],
+  testMatch: ['**/?(*.)+(spec|test).[jt]s?(x)'],
   coverageThreshold: {
     global: {
       branches: 80,

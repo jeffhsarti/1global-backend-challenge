@@ -2,13 +2,7 @@
 CREATE SCHEMA IF NOT EXISTS devices;
 
 -- Creates the DEVICE_STATE enum
-DO $$
-BEGIN
-  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'device_state') THEN
-    CREATE TYPE devices.device_state AS ENUM ('AVAILABLE', 'IN_USE', 'INACTIVE');
-  END IF;
-END
-$$;
+CREATE TYPE IF NOT EXISTS devices.device_state AS ENUM ('AVAILABLE','IN_USE','INACTIVE');
 
 -- Creates the table
 CREATE TABLE IF NOT EXISTS devices.device (

@@ -26,6 +26,7 @@
     "husky": "^8.0.0",
     "jest": "^30.0.2",
     "lint-staged": "^15.5.2",
+    "pg-mem": "^3.0.5",
     "prettier": "^3.5.3",
     "supertest": "^7.1.1",
     "ts-jest": "^29.4.0",
