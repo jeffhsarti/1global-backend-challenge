@@ -7,6 +7,69 @@ import {
   ForbiddenInUseDeviceOperation,
 } from '@config/errors/device';
 
+/**
+ * @swagger
+ * /device/{id}/state:
+ *   patch:
+ *     summary: Update the state of a device
+ *     tags:
+ *       - Device
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *         description: UUID of the device to update
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - state
+ *             properties:
+ *               state:
+ *                 type: string
+ *                 enum: [AVAILABLE, IN_USE, INACTIVE]
+ *                 description: New state of the device
+ *     responses:
+ *       200:
+ *         description: Device state updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Device'
+ *       404:
+ *         description: Device not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *       409:
+ *         description: Operation forbidden because device is in use
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *       400:
+ *         description: Bad request, failed to update device state
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ */
 export class UpdateDeviceStateController {
   private logger = new Logger('UPDATE_STATE_CONTROLLER');
 

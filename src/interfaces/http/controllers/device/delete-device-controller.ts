@@ -6,6 +6,52 @@ import {
   ForbiddenInUseDeviceOperation,
 } from '@config/errors/device';
 
+/**
+ * @swagger
+ * /device/{id}:
+ *   delete:
+ *     summary: Delete a device by ID
+ *     tags:
+ *       - Device
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *         description: UUID of the device to delete
+ *     responses:
+ *       204:
+ *         description: Device deleted successfully
+ *       404:
+ *         description: Device not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *       409:
+ *         description: Device is in use and cannot be deleted
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *       500:
+ *         description: Internal server error during deletion
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ */
 export class DeleteDeviceController {
   private readonly logger = new Logger('DELETE_DEVICE_CONTROLLER');
 

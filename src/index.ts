@@ -6,6 +6,7 @@ import { EnvSecretProvider } from '@infrastructure/secrets/implementations/env-s
 import { SecretManager } from '@infrastructure/secrets/secret-manager';
 import makeHealthRouter from '@interfaces/http/routes/health';
 import makeDeviceRoute from '@interfaces/http/routes/device';
+import { swaggerRoute } from '@interfaces/http/routes/swagger-route';
 import { Logger } from '@utils/logger';
 import { routerLogger } from '@utils/express/routerLogger';
 
@@ -29,6 +30,7 @@ async function bootstrap() {
   logger.info('Registering routers');
   app.use(makeHealthRouter(pool));
   app.use(makeDeviceRoute(pool));
+  app.use(swaggerRoute);
 
   // Start server
   logger.info('Starting the server');

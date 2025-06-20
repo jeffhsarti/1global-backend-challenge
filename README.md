@@ -38,28 +38,27 @@ docker-compose up --build
 
 Health check: http://localhost:3000/health
 
+### 4. Checking the docs
+
+- To see the OpenAPI (Swagger) documentation, simply access http://localhost:3000/docs
+
+- If you want, there's also a Postman collection available in the `/src/docs` folder.
+
 ## ⚙️ Handy scripts
 
+```bash
 Install dependencies:
-
-```bash
 npm install
-```
-
 or
-
-```bash
 npm ci
-```
 
 Build:
-
-```bash
 npm run build
-```
 
 Dev with hot-reload:
-
-```bash
 npm run dev
 ```
+
+### Generating mass for tests
+
+In the `/sql` folder, there is a sql file named `mass.sql`. You can run it to generate random devices to populate your database.

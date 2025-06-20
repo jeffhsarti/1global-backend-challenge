@@ -7,6 +7,70 @@ import {
   ForbiddenInUseDeviceOperation,
 } from '@config/errors/device';
 
+/**
+ * @swagger
+ * /device/{id}/info:
+ *   patch:
+ *     summary: Update device name and brand
+ *     tags:
+ *       - Device
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *         description: UUID of the device to update
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *               - brand
+ *             properties:
+ *               name:
+ *                 type: string
+ *               brand:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Device updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Device'
+ *       404:
+ *         description: Device not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *       409:
+ *         description: Device is in use and cannot be modified
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *       400:
+ *         description: Bad request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ */
 export class UpdateDeviceInfoController {
   private logger = new Logger('UPDATE_DEVICE_INFO_CONTROLLER');
 

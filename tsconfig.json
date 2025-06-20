@@ -21,7 +21,8 @@
       "@infrastructure/*": ["src/infrastructure/*"],
       "@interfaces/*": ["src/interfaces/*"],
       "@config/*": ["src/config/*"],
-      "@utils/*": ["src/utils/*"]
+      "@utils/*": ["src/utils/*"],
+      "@docs/*": ["src/docs/*"]
     }
   },
   "include": ["src/**/*"],

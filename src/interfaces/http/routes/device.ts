@@ -75,7 +75,7 @@ export default function makeDeviceRouter(pool: Pool) {
     getDevicesPaginatedController.handle.bind(getDevicesPaginatedController),
   );
   router.get(
-    '/devices/filter',
+    '/devices',
     validateQuery(paginatedDeviceFilterSchema),
     validateQuery(paginatedDeviceSchema),
     getDevicesByQueryController.handle.bind(getDevicesByQueryController),

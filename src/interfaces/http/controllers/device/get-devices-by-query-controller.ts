@@ -3,6 +3,81 @@ import { Logger } from '@utils/logger';
 import { GetDevicesByQueryUseCase } from '@application/use-cases/device/get-devices-by-query-use-case';
 import { DEVICE_STATE } from '@domain/enums/device-state';
 
+/**
+ * @swagger
+ * /devices:
+ *   get:
+ *     summary: Fetch devices filtered by brand and/or state with pagination and sorting
+ *     tags:
+ *       - Device
+ *     parameters:
+ *       - in: query
+ *         name: brand
+ *         schema:
+ *           type: string
+ *         description: Filter devices by brand (optional, at least brand or state must be provided)
+ *       - in: query
+ *         name: state
+ *         schema:
+ *           type: string
+ *           enum: [AVAILABLE, IN_USE, INACTIVE]
+ *         description: Filter devices by state (optional, at least brand or state must be provided)
+ *       - in: query
+ *         name: page
+ *         required: true
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *         description: Page number (must be a positive integer)
+ *       - in: query
+ *         name: count
+ *         required: true
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *         description: Number of devices per page (must be a positive integer)
+ *       - in: query
+ *         name: sortBy
+ *         schema:
+ *           type: string
+ *           enum: [brand, name]
+ *         description: Field to sort by (brand or name)
+ *       - in: query
+ *         name: sortOrder
+ *         schema:
+ *           type: string
+ *           enum: [ASC, DESC]
+ *         description: Sort order (ASC or DESC)
+ *     responses:
+ *       200:
+ *         description: List of devices filtered, paginated and sorted
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Device'
+ *       400:
+ *         description: Validation error - missing required filters or invalid query params
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 err:
+ *                   type: string
+ *                   example: At least one of "brand" or "state" must be provided
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 err:
+ *                   type: string
+ *                   example: Internal Server Error
+ */
 export class GetDevicesByQueryController {
   private logger = new Logger('GET_DEVICES_BY_QUERY_CONTROLLER');
 

@@ -1,0 +1,229 @@
+{
+	"info": {
+		"_postman_id": "18173305-31ea-4812-8cbc-a1e109230e8e",
+		"name": "Device Challenge",
+		"description": "",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "23454358"
+	},
+	"item": [
+		{
+			"name": "Devices",
+			"item": [
+				{
+					"name": "Update Device State",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"state\": \"AVAILABLE\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/device/9553695b-2230-490c-9a56-2f0a531d9051/state",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"device",
+								"9553695b-2230-490c-9a56-2f0a531d9051",
+								"state"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Device",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/device/9553695b-2230-490c-9a56-2f0a531d9051",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"device",
+								"9553695b-2230-490c-9a56-2f0a531d9051"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Devices",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{base_url}}/devices/all?count=50&page=2000&sortBy=brand&sortOrder=ASC",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"devices",
+								"all"
+							],
+							"query": [
+								{
+									"key": "count",
+									"value": "50"
+								},
+								{
+									"key": "page",
+									"value": "2000"
+								},
+								{
+									"key": "sortBy",
+									"value": "brand"
+								},
+								{
+									"key": "sortOrder",
+									"value": "ASC"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Probes",
+			"item": []
+		},
+		{
+			"name": "Health Check",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/health",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"health"
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Create Device",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Successful POST Device request\", function () {",
+							"    pm.expect(pm.response.code).to.be.eq(201);",
+							"    const requestBody = JSON.parse(pm.request.body.raw);",
+							"    console.log(requestBody.name);",
+							"    const responseBody = pm.response.json();",
+							"    pm.expect(responseBody.state).to.be.eq(\"AVAILABLE\");",
+							"    pm.expect(typeof responseBody.id).to.be.eq(\"string\");",
+							"    pm.expect(responseBody.id.length).greaterThan(0);",
+							"    pm.expect(responseBody.createdAt).not.be.null;",
+							"    pm.expect(responseBody.updatedAt).not.be.null;",
+							"    pm.expect(responseBody.name).to.be.eq(requestBody.name);",
+							"    pm.expect(responseBody.brand).to.be.eq(requestBody.brand);",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"name\": \"Smartphone Galaxy S1\",\n    \"brand\": \"Samsung\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/device",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"device"
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:3000"
+		}
+	]
+}
