@@ -1,22 +1,18 @@
-import { AnyZodObject, ZodError } from 'zod';
+import { AnyZodObject } from 'zod';
 import { Request, Response, NextFunction } from 'express';
 
-type RequestPart = 'body' | 'query' | 'params';
+type RequestTarget = 'body' | 'query' | 'params';
 
-export function validate(schema: AnyZodObject, part: RequestPart = 'body') {
+export function validate(schema: AnyZodObject, target: RequestTarget = 'body') {
   return (req: Request, res: Response, next: NextFunction) => {
-    try {
-      schema.parse(req[part]);
-      next();
-      return;
-    } catch (err) {
-      if (err instanceof ZodError) {
-        res.status(400).json({ errors: err.errors });
-        return;
-      }
+    const result = schema.safeParse(req[target]);
 
-      res.status(500).json({ message: 'Internal server error' });
+    if (!result.success) {
+      const formatted = result.error.format();
+      res.status(400).json({ error: formatted });
       return;
     }
+
+    next();
   };
 }

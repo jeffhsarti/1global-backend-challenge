@@ -22,9 +22,17 @@ import {
 import { deviceIdSchema } from '../schemas/device/device-id-schema';
 import { GetDeviceByIdUseCase } from '@application/use-cases/device/get-device-by-id-use-case';
 import { GetDeviceByIdController } from '../controllers/device/get-device-by-id-controller';
+import { GetDevicesPaginatedUseCase } from '@application/use-cases/device/get-device-paginated-use-case';
+import { GetDevicePaginatedController } from '../controllers/device/get-device-paginated-controller';
+import { paginatedDeviceSchema } from '../schemas/device/paginated-device-schema';
 
 export default function makeDeviceRouter(pool: Pool) {
   const repository = new PostgresDeviceRepository(pool);
+
+  const getDevicesPaginatedUseCase = new GetDevicesPaginatedUseCase(repository);
+  const getDevicesPaginatedController = new GetDevicePaginatedController(
+    getDevicesPaginatedUseCase,
+  );
 
   const getDeviceByIdUseCase = new GetDeviceByIdUseCase(repository);
   const getDeviceByIdController = new GetDeviceByIdController(
@@ -52,6 +60,11 @@ export default function makeDeviceRouter(pool: Pool) {
   );
 
   const router = Router();
+  router.get(
+    '/device',
+    validate(paginatedDeviceSchema, 'query'),
+    getDevicesPaginatedController.handle.bind(getDevicesPaginatedController),
+  );
   router.get(
     '/device/:id',
     validate(deviceIdSchema, 'params'),

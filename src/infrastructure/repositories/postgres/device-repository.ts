@@ -74,6 +74,40 @@ export class PostgresDeviceRepository implements DeviceRepository {
     return mapToDevice(result.rows[0]);
   }
 
+  async getAll(
+    limit: number,
+    offset: number,
+    sortBy: string,
+    sortOrder: 'DESC' | 'ASC',
+  ): Promise<Device[]> {
+    const allowedSortBy = ['name', 'brand']; // ou qualquer outro campo permitido
+    const allowedSortOrder = ['ASC', 'DESC'];
+
+    if (!allowedSortBy.includes(sortBy)) {
+      throw new Error(`Invalid sortBy field: ${sortBy}`);
+    }
+    if (!allowedSortOrder.includes(sortOrder)) {
+      throw new Error(`Invalid sortOrder: ${sortOrder}`);
+    }
+
+    const query = `
+      SELECT id, name, brand, state, "createdAt", "updatedAt"
+      FROM devices.device
+      ORDER BY ${sortBy} ${sortOrder}
+      LIMIT $1 OFFSET $2
+    `;
+
+    const result = await this.pool.query(query, [limit, offset]);
+    return result.rows.map(mapToDevice);
+  }
+
+  async countAll(): Promise<number> {
+    const result = await this.pool.query<{ count: string }>(
+      `SELECT COUNT(*) FROM devices.device`,
+    );
+    return Number(result.rows[0].count);
+  }
+
   async update(device: Device): Promise<Device> {
     const query = `
       UPDATE devices.device
