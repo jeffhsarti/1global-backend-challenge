@@ -24,3 +24,5 @@ CREATE TABLE IF NOT EXISTS devices.device (
 CREATE INDEX IF NOT EXISTS idx_devices_state ON devices.device (state);
 CREATE INDEX IF NOT EXISTS idx_devices_name ON devices.device (name);
 CREATE INDEX IF NOT EXISTS idx_devices_brand ON devices.device (brand);
+CREATE INDEX IF NOT EXISTS idx_devices_state_name_asc ON devices.device(state, name);
+CREATE INDEX IF NOT EXISTS idx_devices_state_brand_asc ON devices.device(state, brand);
