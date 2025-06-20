@@ -62,7 +62,7 @@ export class GetDeviceByIdController {
         res.status(404).json({ error: err.message });
         return;
       }
-      res.status(500).json({ err: 'Internal Server Error' });
+      res.status(500).json({ error: 'Internal Server Error' });
     }
   }
 }

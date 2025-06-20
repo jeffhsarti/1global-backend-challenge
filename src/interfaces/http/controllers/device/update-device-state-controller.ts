@@ -2,10 +2,7 @@ import { Request, Response } from 'express';
 import { Logger } from '@utils/logger';
 import { UseCase } from '@application/use-cases/use-case';
 import { Device } from '@domain/models/device';
-import {
-  DeviceNotFoundError,
-  ForbiddenInUseDeviceOperation,
-} from '@config/errors/device';
+import { DeviceNotFoundError } from '@config/errors/device';
 
 /**
  * @swagger
@@ -42,6 +39,15 @@ import {
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Device'
+ *       400:
+ *         description: Bad request, failed to update device state
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
  *       404:
  *         description: Device not found
  *         content:
@@ -51,17 +57,8 @@ import {
  *               properties:
  *                 error:
  *                   type: string
- *       409:
- *         description: Operation forbidden because device is in use
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 error:
- *                   type: string
- *       400:
- *         description: Bad request, failed to update device state
+ *       500:
+ *         description: Internal server error during state update
  *         content:
  *           application/json:
  *             schema:
@@ -85,15 +82,11 @@ export class UpdateDeviceStateController {
       res.status(200).json(updated);
     } catch (err) {
       this.logger.error('Error updating state', err as Error);
-      if (err instanceof ForbiddenInUseDeviceOperation) {
-        res.status(409).json({ error: err.message });
-        return;
-      }
       if (err instanceof DeviceNotFoundError) {
         res.status(404).json({ error: err.message });
         return;
       }
-      res.status(400).json({ error: 'Failed to update device state.' });
+      res.status(50).json({ error: 'Failed to update device state.' });
     }
   }
 }

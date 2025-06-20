@@ -43,6 +43,15 @@ import {
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Device'
+ *       400:
+ *         description: Bad request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
  *       404:
  *         description: Device not found
  *         content:
@@ -61,8 +70,8 @@ import {
  *               properties:
  *                 error:
  *                   type: string
- *       400:
- *         description: Bad request
+ *       500:
+ *         description: Internal server error during name/brand update
  *         content:
  *           application/json:
  *             schema:
@@ -97,7 +106,7 @@ export class UpdateDeviceInfoController {
         res.status(404).json({ error: err.message });
         return;
       }
-      res.status(400).json({ error: 'Failed to update device name or brand.' });
+      res.status(500).json({ error: 'Failed to update device name or brand.' });
     }
   }
 }

@@ -1,40 +1,31 @@
-import { Pool } from 'pg';
 import { HealthFeedback } from '@domain/enums/health-feedback';
+import { HealthRepository } from '@application/repositories/health-repository';
+import { UseCase } from '../use-case';
 import {
   HEALTH_STATUS,
   DATABASE_CONNECTION_STATUS,
 } from '@domain/enums/health-status';
-import { UseCase } from '../use-case';
 
 export class HealthCheckUseCase implements UseCase<HealthFeedback> {
-  constructor(private pool: Pool) {}
+  constructor(private healthRepository: HealthRepository) {}
 
   /**
    * Executes the health check use case.
    * @returns A promise that resolves to the health feedback of the system.
    */
   async execute(): Promise<HealthFeedback> {
-    const databaseHealth = await this.checkDatabase();
+    const isDatabaseConnected =
+      await this.healthRepository.checkDatabaseConnection();
+    const databaseStatus = isDatabaseConnected
+      ? DATABASE_CONNECTION_STATUS.CONNECTED
+      : DATABASE_CONNECTION_STATUS.UNAVAILABLE;
 
     return {
-      status: this.checkStatus(databaseHealth),
+      status: this.checkStatus(databaseStatus),
       metadata: {
-        database: databaseHealth,
+        database: databaseStatus,
       },
     };
-  }
-
-  /**
-   * Checks the status of the database connection.
-   * @returns A promise that resolves to the database connection status.
-   */
-  private async checkDatabase() {
-    try {
-      await this.pool.query('SELECT 1');
-      return DATABASE_CONNECTION_STATUS.CONNECTED;
-    } catch {
-      return DATABASE_CONNECTION_STATUS.UNAVAILABLE;
-    }
   }
 
   /**

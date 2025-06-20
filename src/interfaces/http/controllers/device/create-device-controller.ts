@@ -49,7 +49,7 @@ export class CreateDeviceController {
       res.status(201).json(device);
     } catch (err) {
       this.logger.error('Error creating device', err as Error);
-      res.status(500).json({ err: 'Internal Server Error' });
+      res.status(500).json({ error: 'Internal Server Error' });
     }
   }
 }

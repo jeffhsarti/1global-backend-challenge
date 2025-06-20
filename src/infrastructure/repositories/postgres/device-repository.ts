@@ -56,7 +56,7 @@ export class PostgresDeviceRepository implements DeviceRepository {
     }
   }
   private validateSortByParameter(sortBy: string): void {
-    const validOrderFields = ['name', 'brand'];
+    const validOrderFields = ['name', 'brand', 'createdAt'];
     if (!validOrderFields.includes(sortBy)) {
       throw new Error(`Invalid sortBy field: ${sortBy}`);
     }
@@ -72,19 +72,28 @@ export class PostgresDeviceRepository implements DeviceRepository {
   ): Promise<Device[]> {
     this.validateSortByParameter(sortBy);
     this.validateSortOrderParameter(sortOrder);
-    let query = `
-      SELECT *
-      FROM devices.device
-      WHERE state = ANY($3)
-    `;
 
-    const params: any[] = [limit, offset, state];
+    let paramIndex = 1;
+    const params: any[] = [];
+
+    // Adiciona os estados dinamicamente como $1, $2, ...
+    const statePlaceholders = state.map(() => `$${paramIndex++}`).join(', ');
+    params.push(...state);
+
+    let query = `
+    SELECT *
+    FROM devices.device
+    WHERE state IN (${statePlaceholders})
+  `;
+
     if (brand) {
+      query += ` AND brand = $${paramIndex++}`;
       params.push(brand);
-      query += ` AND brand = $${params.length}`;
     }
 
-    query += ` ORDER BY ${sortBy} ${sortOrder} LIMIT $1 OFFSET $2`;
+    // Adiciona limit e offset ao final
+    query += ` ORDER BY "${sortBy}" ${sortOrder} LIMIT $${paramIndex++} OFFSET $${paramIndex}`;
+    params.push(limit, offset);
     const result = await this.pool.query(query, params);
     return result.rows.map(mapToDevice);
   }
@@ -92,7 +101,7 @@ export class PostgresDeviceRepository implements DeviceRepository {
   async countByQuery(state: DEVICE_STATE[], brand?: string): Promise<number> {
     let query = `
       SELECT COUNT(*) FROM devices.device
-      WHERE state = ANY($1)
+      WHERE state = ANY($1::devices.device_state[])
     `;
 
     const params: any[] = [state];
@@ -143,7 +152,7 @@ export class PostgresDeviceRepository implements DeviceRepository {
     const query = `
       SELECT id, name, brand, state, "createdAt", "updatedAt"
       FROM devices.device
-      ORDER BY ${sortBy} ${sortOrder}
+      ORDER BY "${sortBy}" ${sortOrder}
       LIMIT $1 OFFSET $2
     `;
 

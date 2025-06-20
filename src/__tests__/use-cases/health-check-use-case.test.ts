@@ -5,6 +5,8 @@ import {
   HEALTH_STATUS,
 } from '@domain/enums/health-status';
 import { Pool } from 'pg';
+import { PostgresHealthRepository } from '@infrastructure/repositories/postgres/health-repository';
+import { HealthRepository } from '@application/repositories/health-repository';
 
 jest.mock('pg', () => {
   const mPool = {
@@ -17,11 +19,13 @@ jest.mock('pg', () => {
 
 describe('HealthCheckUseCase', () => {
   let pool: Pool;
+  let healthRepository: HealthRepository;
   let useCase: HealthCheckUseCase;
 
   beforeEach(() => {
     pool = new Pool();
-    useCase = new HealthCheckUseCase(pool);
+    healthRepository = new PostgresHealthRepository(pool);
+    useCase = new HealthCheckUseCase(healthRepository);
     jest.clearAllMocks();
   });
 
